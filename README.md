@@ -1,1 +1,3 @@
 # Lexis
+
+Lexer generator
