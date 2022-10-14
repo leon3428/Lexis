@@ -1,7 +1,8 @@
 #include <iostream>
-#include <LexisConfig.h>
+#include <LexisConfig.hpp>
 #include "Utils.hpp"
 #include "RegexSyntaxTree.hpp"
+#include "Dfa.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -12,6 +13,10 @@ int main(int argc, char const *argv[])
     //RegexSyntaxTree t("(a|b)*abb#");
     //RegexSyntaxTree t("$|$a|a$");
     RegexSyntaxTree t("(a|b)((c|d)*e)*");
-    t.print();
+
+    Dfa d(10);
+    d.setTransition(10, 'a', 0);
+
+    //t.print();
     return 0;
 }

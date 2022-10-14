@@ -11,6 +11,7 @@ configure_file(src/LexisConfig.hpp.in LexisConfig.hpp)
 add_executable(${PROJECT_NAME} 
     src/Lexis.cpp
     src/RegexSyntaxTree.cpp
+    src/Dfa.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
