@@ -10,13 +10,13 @@ int main(int argc, char const *argv[])
 
     //RegexSyntaxTree t("ab|cd|ef(gh|ij)*ab|de*d");
     //RegexSyntaxTree t("a|bcdef*g*h*i*(((j)))|k");
-    //RegexSyntaxTree t("(a|b)*abb#");
+    RegexSyntaxTree t("(a|b)*abb#"); //+ char(17)
     //RegexSyntaxTree t("$|$a|a$");
-    RegexSyntaxTree t("(a|b)((c|d)*e)*");
-
-    Dfa d(10);
-    d.setTransition(10, 'a', 0);
+    //RegexSyntaxTree t("(a|b)((c|d)*e)*");
 
     //t.print();
+
+    Dfa dfa;
+    t.exportDfa(dfa);
     return 0;
 }

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Dfa.hpp"
+
 struct RegexSyntaxTreeNode {
     char val;
     bool nullable;
@@ -18,6 +20,7 @@ struct RegexSyntaxTreeNode {
         : val(val), isOperator(isOperator), nullable(false), leftChild(leftChild), rightChild(rightChild) {}
 };
 
+
 class RegexSyntaxTree{
 private:
     RegexSyntaxTreeNode* m_treeBuilder(const std::string &regex, int start, int end);
@@ -32,7 +35,8 @@ private:
 public:
     RegexSyntaxTree(const std::string &regex);
 
+    void exportDfa(Dfa &dst);
+
     void print();
 };
 
-void joinPosVectors(std::vector<RegexSyntaxTreeNode*> &dst, const std::vector<RegexSyntaxTreeNode*> &src1, const std::vector<RegexSyntaxTreeNode*> &src2);
