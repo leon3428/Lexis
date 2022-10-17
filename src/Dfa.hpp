@@ -47,6 +47,15 @@ public:
     inline int getTransition(int state, char symbol) const { return m_transitionTable[state][m_getSymbolId(symbol)]; }
 
     /**
+     * @brief Get the Transition object
+     * 
+     * @param state 
+     * @param symbol 
+     * @return int 
+     */
+    inline int getTransition(int state, int symbol) const { return m_transitionTable[state][symbol]; }
+
+    /**
      * @brief Set the Transition object; dfa will expand if state larger than dfa
      * 
      * @param state 
