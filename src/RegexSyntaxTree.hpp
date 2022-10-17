@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Dfa.hpp"
+#include "unordered_map"
 
 struct RegexSyntaxTreeNode {
     char val;
@@ -20,23 +21,45 @@ struct RegexSyntaxTreeNode {
         : val(val), isOperator(isOperator), nullable(false), leftChild(leftChild), rightChild(rightChild) {}
 };
 
-
+/**
+ * @brief Constructs a syntax tree for a given regex, and computes followPos
+ * 
+ */
 class RegexSyntaxTree{
 private:
     RegexSyntaxTreeNode* m_treeBuilder(const std::string &regex, int start, int end);
 
-    std::vector<RegexSyntaxTreeNode> m_nodes;
+    std::vector<RegexSyntaxTreeNode* > m_nodes;
     RegexSyntaxTreeNode *m_root;
+    std::unordered_map<RegexSyntaxTreeNode*, int> m_regexCntMap; 
 
     bool m_isConcat(char a, char b);
     void m_ComputeNFL(RegexSyntaxTreeNode* node);
     void m_ComputeFollowPos();
 
 public:
+    static const char REGEX_SEPARATOR = 17; // DC1
+
+    /**
+     * @brief Construct a new Regex Syntax Tree object
+     * 
+     * @param regex ab - concat, | - union, * - Kleene's operator, \ - escape ch
+     */
     RegexSyntaxTree(const std::string &regex);
 
+    ~RegexSyntaxTree();
+
+    /**
+     * @brief exports dfa from the constructed tree
+     * 
+     * @param dst destination dfa object
+     */
     void exportDfa(Dfa &dst);
 
+    /**
+     * @brief prints the structure of the tree
+     * 
+     */
     void print();
 };
 
