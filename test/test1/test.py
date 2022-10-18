@@ -36,7 +36,7 @@ def main():
                         pass
 
                     p = subprocess.run(['../../build/test/test1/Test1'], input=line + ' ' + string + '\n', capture_output=True, text=True)
-
+                    
                     if len(p.stdout) == 0 or int(p.stdout[0]) != match:
                         print(int(p.stdout[0]), match)
                         print('[Fail] Regex: ' + line + ' Sequence: ' + string)
