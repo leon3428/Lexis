@@ -10,16 +10,19 @@ int main(int argc, char const *argv[])
 
     //RegexSyntaxTree t("ab|cd|ef(gh|ij)*ab|de*d");
     //RegexSyntaxTree t("a|bcdef*g*h*i*(((j)))|k");
-    std::string regex = "(a|b)*abb";
-    regex += char(17);
+    //std::string regex = "(a|b)*abb";
+    //regex += char(17);
     //regex += "|aba";
     //regex += char(17);
     //RegexSyntaxTree t("$|$a|a$");
     //RegexSyntaxTree t("(a|b)((c|d)*e)*");
 
+    std::string regex = "0001|110|210";
+    regex += char(17);
+
     RegexSyntaxTree t(regex);
 
-    //t.print();
+    t.print();
 
     Dfa dfa;
     t.exportDfa(dfa);

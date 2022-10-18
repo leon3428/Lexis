@@ -8,6 +8,7 @@ int main(int argc, char const *argv[])
     
     std::cin >> regex >> in;
     
+    regex = "(" + regex + ")";
     regex += RegexSyntaxTree::REGEX_SEPARATOR;
 
     RegexSyntaxTree t(regex);

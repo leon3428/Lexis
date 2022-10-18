@@ -5,32 +5,44 @@ gdje je u prvom redu taj regex, a u svim ostalim neki string i 0 ako ne zadovolj
 
 import re
 import itertools
+import subprocess
 
 ALPHABET = ["0", "1", "2"]
-MAX_LENGTH = 10
+MAX_LENGTH = 7
 
 def main():
     with open("regex.txt") as f:
         for cnt, line in enumerate(f.readlines()):
-            line = line.strip()
-            regex = '\A' + line + '\Z'
+            print('[info] Testing regex', cnt)
+            failCnt = 0
+            testCnt = 0
 
-            with open(str(cnt) + '.txt', 'w+') as test:
-                test.write(line + '\n')
-                for i in range(1, MAX_LENGTH + 1):
-                    for subset in itertools.product(ALPHABET, repeat=i):
-                        string = ''.join(subset)
+            regex = line.strip()
+            #regex = '\A(' + line + ')\Z'
 
-                        tmp = re.match(regex, string)
-                        match = 0
-                        try:
-                            start, end = tmp.span()
-                            if end - start == len(string):
-                                match = 1
-                        except:
-                            pass
-                        test.write(' '.join([string, str(match)]) + '\n')
+            for i in range(1, MAX_LENGTH + 1):
+                for subset in itertools.product(ALPHABET, repeat=i):
+                    testCnt+=1
+
+                    string = ''.join(subset)
+
+                    tmp = re.fullmatch(regex, string)
+                    match = 0
+                    try:
+                        start, end = tmp.span()
+                        if end - start == len(string):
+                            match = 1
+                    except:
+                        pass
+
+                    p = subprocess.run(['../../build/test/test1/Test1'], input=line + ' ' + string + '\n', capture_output=True, text=True)
+
+                    if len(p.stdout) == 0 or int(p.stdout[0]) != match:
+                        print(int(p.stdout[0]), match)
+                        print('[Fail] Regex: ' + line + ' Sequence: ' + string)
+                        failCnt+=1
                 
+            print('[info]', failCnt, '/', testCnt, 'failed')
 
 if __name__ == "__main__":
     main()
