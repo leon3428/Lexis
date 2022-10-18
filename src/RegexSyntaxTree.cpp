@@ -45,9 +45,26 @@ RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, in
 
     LogInfo("Tree Builder Recursion: %s", regex.substr(start, end - start).c_str());
 
-    while(regex[start] == '(' && regex[end - 1] == ')') {
-        start++;
-        end--;
+    bool removeBrackets = true;
+    while(regex[start] == '(' && regex[end - 1] == ')' && removeBrackets) {
+        
+        int bracketCnt = 0;
+
+        for(int i = start; i < end; i++) {
+            if(regex[i] == '(')
+                bracketCnt++;
+            if(regex[i] == ')')
+                bracketCnt--;
+            if(i != start && i != end-1 && bracketCnt == 0) {
+                removeBrackets = false;
+                break;
+            }
+        }
+        
+        if(removeBrackets) {
+            start++;
+            end--;
+        }
     }
 
     if(end - start == 1)
