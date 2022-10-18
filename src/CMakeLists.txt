@@ -4,6 +4,7 @@ add_executable(${PROJECT_NAME}
     Lexis.cpp
     RegexSyntaxTree.cpp
     Dfa.cpp
+    Minimizer.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
