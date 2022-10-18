@@ -6,9 +6,28 @@
 #include <algorithm>
 #include <set>
 
-bool RegexSyntaxTree::m_isConcat(char a, char b)
+bool RegexSyntaxTree::isConcat(const std::string &s, int pos)
 {
-    // TODO: special characters
+    char a, b;
+
+    /////////////////////////////////
+    if(isEscaped(s, pos))
+        a = 'a';
+    else
+        a = s[pos];
+
+    if(a == '\\')
+        return false;
+    /////////////////////////////////
+    if(s[pos+1] == '\\') {
+        if(pos+2 >= s.size())
+            return false;
+        b = 'a';
+    } else {
+        b = s[pos+1];
+    }
+    /////////////////////////////////
+
     if(a == '|')
         return false;
     if(a == '(')
@@ -37,23 +56,29 @@ RegexSyntaxTree::~RegexSyntaxTree()
         delete node;
 }
 
-
+bool RegexSyntaxTree::isEscaped(const std::string &s, int pos) {
+    int cnt = 0;
+    pos--;
+    while(pos >= 0 && s[pos] == '\\') {
+        pos--;
+        cnt++;
+    }
+    return cnt % 2;
+}
 
 RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, int start, int end)
 {
-    // TODO: special characters
-
     LogInfo("Tree Builder Recursion: %s", regex.substr(start, end - start).c_str());
 
     bool removeBrackets = true;
-    while(regex[start] == '(' && regex[end - 1] == ')' && removeBrackets) {
+    while(isLeftBracket(regex, start) && isRightBracket(regex, end - 1) && removeBrackets) {
         
         int bracketCnt = 0;
 
         for(int i = start; i < end; i++) {
-            if(regex[i] == '(')
+            if(isLeftBracket(regex, i))
                 bracketCnt++;
-            if(regex[i] == ')')
+            if(isRightBracket(regex, i))
                 bracketCnt--;
             if(i != start && i != end-1 && bracketCnt == 0) {
                 removeBrackets = false;
@@ -67,9 +92,28 @@ RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, in
         }
     }
 
-    if(end - start == 1)
+    if(end - start == 1 || (end - start == 2 && regex[start] == '\\'))
     {
-        m_nodes.push_back(new RegexSyntaxTreeNode(regex[start], false));
+        bool special = false;
+        char c = regex[end - 1];
+
+        if(end - start == 1 && regex[start] == '$') {
+            special = true;
+        }
+
+        if(end - start == 2 && regex[end - 1] == 'n') {
+            c = '\n';
+        }
+
+        if(end - start == 2 && regex[end - 1] == 't') {
+            c = '\t';
+        }
+
+        if(end - start == 2 && regex[end - 1] == '_') {
+            c = ' ';
+        }
+
+        m_nodes.push_back(new RegexSyntaxTreeNode(c, special));
 
         if(regex[start] == REGEX_SEPARATOR) {
             int cnt = 0;
@@ -83,18 +127,19 @@ RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, in
         return m_nodes[m_nodes.size() - 1];
     }
 
+    
     // try to find a union operator
     int i;
     int bracketCnt = 0;
 
     for(i = start; i < end; i++)
     {
-        if(regex[i] == '(')
+        if(isLeftBracket(regex, i))
             bracketCnt++;
-        if(regex[i] == ')')
+        if(isRightBracket(regex, i))
             bracketCnt--;
 
-        if(regex[i] == '|' && bracketCnt == 0)
+        if(isUnion(regex, i) && bracketCnt == 0)
             break;
     }
 
@@ -108,16 +153,18 @@ RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, in
         return m_nodes[m_nodes.size() - 1];
     }
 
+    
+
     // try to find a concatenation operator
     bracketCnt = 0;
 
     for(i = start; i < end - 1; i++)
     {
-        if(regex[i] == '(')
+        if(isLeftBracket(regex, i))
             bracketCnt++;
-        if(regex[i] == ')')
+        if(isRightBracket(regex, i))
             bracketCnt--;
-        if(m_isConcat(regex[i], regex[i+1]) && bracketCnt == 0)
+        if(isConcat(regex, i) && bracketCnt == 0)
             break;
     }
 
@@ -132,7 +179,7 @@ RegexSyntaxTreeNode* RegexSyntaxTree::m_treeBuilder(const std::string &regex, in
     }
 
     // found Kleene's operator
-    if(regex[end - 1] == '*') {
+    if(isKleene(regex, end-1)) {
         RegexSyntaxTreeNode* left = m_treeBuilder(regex, start, end - 1);
 
         m_nodes.push_back(new RegexSyntaxTreeNode('*', true, left, nullptr));
@@ -190,17 +237,13 @@ void RegexSyntaxTree::m_ComputeNFL(RegexSyntaxTreeNode* node) {
             } else {
                 node -> lastPos = node -> rightChild -> lastPos;
             }
-        }  
-    } else {
-        if(node -> val == '$')
-        {
+        } else if(node -> val == '$') {
             node -> nullable = true;
-        } else {
-            node -> nullable = false;
-            (node -> firstPos).push_back(node);
-            (node -> lastPos).push_back(node);
         }
-        
+    } else {
+        node -> nullable = false;
+        (node -> firstPos).push_back(node);
+        (node -> lastPos).push_back(node);
     }
 }
 

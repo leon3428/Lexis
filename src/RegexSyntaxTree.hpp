@@ -33,7 +33,6 @@ private:
     RegexSyntaxTreeNode *m_root;
     std::unordered_map<RegexSyntaxTreeNode*, int> m_regexCntMap; 
 
-    bool m_isConcat(char a, char b);
     void m_ComputeNFL(RegexSyntaxTreeNode* node);
     void m_ComputeFollowPos();
 
@@ -61,5 +60,19 @@ public:
      * 
      */
     void print();
+
+    static bool isEscaped(const std::string &s, int pos);
+
+    static bool isConcat(const std::string &s, int pos);
+
+    static inline bool isLeftBracket(const std::string &s, int pos) { return s[pos] == '(' && !isEscaped(s, pos); }
+
+    static inline bool isRightBracket(const std::string &s, int pos) { return s[pos] == ')' && !isEscaped(s, pos); }
+
+    static inline bool isEpsilon(const std::string &s, int pos) { return s[pos] == '$' && !isEscaped(s, pos); }
+
+    static inline bool isUnion(const std::string &s, int pos) { return s[pos] == '|' && !isEscaped(s, pos); }
+
+    static inline bool isKleene(const std::string &s, int pos) { return s[pos] == '*' && !isEscaped(s, pos); }
 };
 

@@ -1,11 +1,7 @@
-"""
-Trenutno cita regexe iz filea regex.txt red po red pa za svaki regex napravi poseban file
-gdje je u prvom redu taj regex, a u svim ostalim neki string i 0 ako ne zadovoljava izraz, a 1 ako zadovoljava
-"""
-
 import re
 import itertools
 import subprocess
+import sys
 
 ALPHABET = ["0", "1", "2"]
 MAX_LENGTH = 7
@@ -18,7 +14,6 @@ def main():
             testCnt = 0
 
             regex = line.strip()
-            #regex = '\A(' + line + ')\Z'
 
             for i in range(1, MAX_LENGTH + 1):
                 for subset in itertools.product(ALPHABET, repeat=i):
@@ -38,8 +33,8 @@ def main():
                     p = subprocess.run(['../../build/test/test1/Test1'], input=line + ' ' + string + '\n', capture_output=True, text=True)
 
                     if len(p.stdout) == 0 or int(p.stdout[0]) != match:
-                        print(int(p.stdout[0]), match)
                         print('[Fail] Regex: ' + line + ' Sequence: ' + string)
+                        print(int(p.stdout[0]), match)
                         failCnt+=1
                 
             print('[info]', failCnt, '/', testCnt, 'failed')
