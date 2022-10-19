@@ -4,7 +4,6 @@ add_executable(${PROJECT_NAME}
     Lexis.cpp
     RegexSyntaxTree.cpp
     Dfa.cpp
-    Minimizer.cpp
     ConfigParser.cpp
     Utils.cpp
 )

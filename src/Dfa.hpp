@@ -102,4 +102,11 @@ public:
      * @return int 
      */
     inline int getAlphabetSize() const { return m_alphabetSize; }
+
+    /**
+     * @brief Minimize DFA
+     * 
+     * @return void 
+     */
+    static void minimize(const Dfa &src, Dfa &dst);
 };
