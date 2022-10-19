@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 #ifdef ENABLE_DEBUG_MACRO
@@ -10,3 +12,6 @@
 #  define DebugAssert(cond, msg)
 #endif
 
+namespace utils{
+    std::string trim(const std::string& s);
+}

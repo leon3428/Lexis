@@ -5,6 +5,8 @@ add_executable(${PROJECT_NAME}
     RegexSyntaxTree.cpp
     Dfa.cpp
     Minimizer.cpp
+    ConfigParser.cpp
+    Utils.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
