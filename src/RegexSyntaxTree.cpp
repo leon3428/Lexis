@@ -325,8 +325,11 @@ void RegexSyntaxTree::exportDfa(Dfa &dst) {
     std::unordered_map<std::set<RegexSyntaxTreeNode*, setCmp> , int, SetHasher > statesMap;
 
     states.push_back(new std::set<RegexSyntaxTreeNode*, setCmp>());
-    insertPosVector(*states[0], m_root -> firstPos);
     statesMap[*states[0]] = 0;
+
+    states.push_back(new std::set<RegexSyntaxTreeNode*, setCmp>());
+    insertPosVector(*states[1], m_root -> firstPos);
+    statesMap[*states[1]] = 1;
 
     dst.setStartState(1);
 
@@ -352,7 +355,7 @@ void RegexSyntaxTree::exportDfa(Dfa &dst) {
                 }
             
                 if(prevNode -> val != REGEX_SEPARATOR)
-                    dst.setTransition(i + 1, prevNode -> val, statesMap[*newState] + 1);
+                    dst.setTransition(i, prevNode -> val, statesMap[*newState]);
                 newState = new std::set<RegexSyntaxTreeNode*, setCmp>();
             } 
              
@@ -363,7 +366,7 @@ void RegexSyntaxTree::exportDfa(Dfa &dst) {
 
         if(!(states[i] -> empty()))
         {
-            dst.setAcceptable(i+1, acceptable);
+            dst.setAcceptable(i, acceptable);
 
             if(statesMap.find(*newState) == statesMap.end()) {
                 // newState does not exists
@@ -372,7 +375,7 @@ void RegexSyntaxTree::exportDfa(Dfa &dst) {
             }
 
             if(prevNode -> val != REGEX_SEPARATOR)
-                dst.setTransition(i + 1, prevNode -> val, statesMap[*newState] + 1);
+                dst.setTransition(i, prevNode -> val, statesMap[*newState]);
         }
     }
 

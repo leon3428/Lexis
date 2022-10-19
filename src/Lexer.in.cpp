@@ -1,9 +1,12 @@
 #include <iostream>
 
 struct Token {
-    std::string &program;
+    const std::string &program;
     int start, end;
-    int regexId;
+    int tokenId;
+
+    Token(const std::string &program, int start, int end, int tokenId) 
+        : program(program), start(start), end(end), tokenId(tokenId) {}
 };
 
 $DfaFunctions$
@@ -13,6 +16,8 @@ int main(int argc, char const *argv[])
     std::string program;
     std::cin >> program;
 
-    Token (*stateDfaArray[])(std::string&, int) = { $DfaFunctionsArray$ }; // filled by the generator
+    Token (*stateDfaArray[])(const std::string&, int) = {
+        $DfaFunctionsArray$
+    };
     return 0;
 }

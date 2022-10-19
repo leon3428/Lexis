@@ -8,21 +8,35 @@
  * 
  */
 class Dfa{
-    static const int m_alphabetSize = 100;
+    static const int m_alphabetSize = 97;
     int m_startState;
 
     std::vector<std::array<int, m_alphabetSize> > m_transitionTable;
     std::vector<int> m_acceptable;
 
+public:
     /**
      * @brief function converts an symbol of the alphabet into it's corrsponding id value used to index the transition table
      * 
      * @param symbol all printable characters + TAB + new line
      * @return int 
      */
-    static int m_getSymbolId(char symbol);
+    static int getSymbolId(char symbol);
 
-public:
+    /**
+     * @brief function returns a character corrsponding to the id value
+     * 
+     * @param symbolId 
+     * @return char 
+     */
+    static char getSymbolFromId(int symbolId);
+
+    /**
+     * @brief function prints dfas transition table
+     * 
+     */
+    void print() const;
+
     /**
      * @brief Get the Start State object
      * 
@@ -44,7 +58,7 @@ public:
      * @param symbol 
      * @return int 
      */
-    inline int getTransition(int state, char symbol) const { return m_transitionTable[state][m_getSymbolId(symbol)]; }
+    inline int getTransition(int state, char symbol) const { return m_transitionTable[state][getSymbolId(symbol)]; }
 
     /**
      * @brief Get the Transition object by id
