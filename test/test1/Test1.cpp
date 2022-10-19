@@ -1,7 +1,6 @@
 #include <iostream>
 #include "../../src/RegexSyntaxTree.hpp"
 #include "../../src/Dfa.hpp"
-#include "../../src/Minimizer.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -13,10 +12,10 @@ int main(int argc, char const *argv[])
     regex += RegexSyntaxTree::REGEX_SEPARATOR;
 
     RegexSyntaxTree t(regex);
-    Dfa dfa;
+    Dfa originalDfa, dfa;
 
-    t.exportDfa(dfa);
-    dfa = *Minimizer::minimize(&dfa);
+    t.exportDfa(originalDfa);
+    Dfa::minimize(originalDfa, dfa);
 
     int state = dfa.getStartState();
     for(char c : in) {
