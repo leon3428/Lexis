@@ -1,26 +1,26 @@
 #include <iostream>
 #include <LexisConfig.hpp>
 #include "Utils.hpp"
-#include "RegexSyntaxTree.hpp"
+#include "ConfigParser.hpp"
 #include "Dfa.hpp"
 
 int main(int argc, char const *argv[])
 {
+    LogInfo("%d", Dfa::getSymbolId('\n'));
     std::cout << argv[0] << " Version: " << LEXIS_VERSION_MAJOR << '.' << LEXIS_VERSION_MINOR << std::endl;
 
-    //std::string regex = "\\|\\$|\\|";
-    //std::string regex = "\\\\\\\\";
-    //std::string regex = "(\\\\|\\|)*(\\*|\\t)";
-    //std::string regex = "\\$\\$$";
-    //std::string regex = "\\\\\\\t";
-    std::string regex = "\\_\\_*";
+    ConfigParser configParser; 
 
-    regex = "(" + regex + ")";
-    regex += char(17);
+    configParser.addRegexToState("state0", "(a|b)*abb");
+    configParser.addRegexToState("state0", "aba");
 
-    RegexSyntaxTree t(regex);
+    configParser.addRegexToState("state1", "\\\\a|\\t\\n");
+    configParser.addRegexToState("state1", "\\\\");
 
-    t.print();
+    configParser.compileRegex();
 
+    std::string inPath = "src/Lexer.in.cpp";
+    std::string outPath = "Lexer.cpp";
+    configParser.generateLexer(inPath, outPath);
     return 0;
 }

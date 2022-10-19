@@ -9,5 +9,5 @@ std::string utils::trim(const std::string& s) {
     while(end >= 0 && (s[end] == ' ' || s[end] == '\t'))
         end--;
 
-    return s.substr(start, end-start);
+    return s.substr(start, end - start + 1);
 }
