@@ -12,12 +12,18 @@ Dfa *Minimizer::minimize(Dfa *dfa)
     groupSplitInto.resize(dfa->getStateCount());
     std::fill(groupSplitInto.begin(), groupSplitInto.end(), -1);
 
+    int groupCnt = 0;
     for(int i = 0; i < dfa->getStateCount(); ++i){
-        group[i] = (dfa->getAcceptable(i) == -1);
+        int regexId = dfa->getAcceptable(i);
+        if(regexId == -1)
+            group[i] = 0;
+        else{
+            group[i] = regexId + 1; // svaki regex je posebna grupa
+            groupCnt = std::max(groupCnt, regexId + 2);
+        }
         groupRepresentative[ group[i] ] = i;
     }
     
-    int groupCnt = 2;
     bool change = true;
     while(change) {
         change = false;
@@ -43,16 +49,10 @@ Dfa *Minimizer::minimize(Dfa *dfa)
             }
         }
     }
-    
-    for(int i = 0; i < dfa->getStateCount(); ++i){
-        if(dfa->getAcceptable(i) == -1)
-            continue;
-        if(dfa->getAcceptable(i) < dfa->getAcceptable( groupRepresentative[group[i]] ))
-            groupRepresentative[group[i]] = i;
-    }
 
     Dfa *minimizedDfa = new Dfa();    
     minimizedDfa -> setStartState(group[ dfa->getStartState() ]);
+    
     for(int i = 0; i < groupCnt; ++i){
         for(int j = 0; j < dfa->getAlphabetSize(); ++j){
             minimizedDfa -> setTransitionInt(i, j, group[ dfa->getTransitionInt( groupRepresentative[i], j) ]);
