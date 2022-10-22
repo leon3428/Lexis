@@ -1,5 +1,7 @@
 #include "ConfigParser.hpp"
 #include <fstream>
+#include <string>
+#include <unordered_map>
 #include "Utils.hpp"
 #include "RegexSyntaxTree.hpp"
 
@@ -11,7 +13,7 @@ void ConfigParser::addRegexToState(const std::string &state, const std::string r
 
 void ConfigParser::compileRegex() {
     for(auto el : m_stateRegex) {
-        m_sateId[el.first] = m_stateDfa.size();
+        m_stateId[el.first] = m_stateDfa.size();
 
         RegexSyntaxTree t(el.second);
 
@@ -89,4 +91,97 @@ void ConfigParser::generateLexer(std::string &inPath, std::string &outPath) cons
 
     inputFile.close();
     outputFile.close();
+}
+
+void ConfigParser::modifyRegex(std::string &regex, std::unordered_map<std::string, std::string> &nameToRegex) const {
+    // removes {}
+    std::vector<int> endpoints;
+    for(int i = 0; i < (int)regex.size(); ++i){
+        if( (regex[i] == '{' || regex[i] == '}') && (i == 0 || regex[i - 1] != '\\') )
+            endpoints.push_back(i);
+    }
+
+    std::string parsedRegex = "";
+    int idEndpoint = 0, idx = 0;
+
+    while(idx < (int)regex.size()) {
+        if(idEndpoint < (int)endpoints.size() && idx == endpoints[idEndpoint]) {
+            int beg = endpoints[idEndpoint];
+            int len = endpoints[idEndpoint + 1] - endpoints[idEndpoint] + 1;
+            std::string regexName = regex.substr(beg, len);
+            parsedRegex += "(" + nameToRegex[regexName] + ")";
+
+            idx = endpoints[idEndpoint + 1];
+            idEndpoint += 2;
+        } else {
+            parsedRegex += regex[idx]; 
+        }
+        idx ++;
+    }
+
+    regex = parsedRegex;
+}
+
+void ConfigParser::parseInput(std::string &filename){
+    /* 
+    states = stanja
+    names = imena leksickih jedinki
+    nameToRegex = key je {vrijednost} i vraca regex sa zamijenjenim {}
+    */
+
+    std::string inp;
+    std::ifstream stream(filename);
+    std::unordered_map<std::string, std::string> nameToRegex;
+    bool start = true;
+    std::vector<std::string> states, names;
+
+    while(stream >> inp){
+        if(inp == "%X"){
+            start = false;
+            stream >> inp;
+            while(inp != "%L"){
+                states.push_back(inp);
+                stream >> inp;
+            }
+        }
+
+        if(inp == "%L") {
+            stream >> inp;
+            while(inp[0] != '<') {
+                names.push_back(inp);
+                stream >> inp;
+            }
+        }
+
+        if(start) {
+            std::string regex;
+            stream >> regex;
+            modifyRegex(regex, nameToRegex);
+            nameToRegex[inp] = regex;
+            LogInfo("input: %s regex: %s", inp.c_str(), regex.c_str());
+        } else { // stanje regex akcija
+            int endpos = inp.find(">");
+            std::string state = inp.substr(1, endpos - 1);
+            std::string regex = inp.substr(endpos + 1);
+            modifyRegex(regex, nameToRegex);
+            LogInfo("state: %s regex: %s", state.c_str(), regex.c_str());
+            addRegexToState(state, regex);
+
+            std::string lexicIndividual;
+            stream >> lexicIndividual; // ili stanje ili -
+
+            while(inp != "}") {
+                stream >> inp;
+                if(inp == "NOVI_REDAK"){
+                    continue;
+                } else if(inp == "UDJI_U_STANJE") {
+                    std::string nextState;
+                    stream >> nextState;
+                } else if(inp == "VRATI_SE") {
+                    int groupFirstN;
+                    stream >> groupFirstN;
+                }
+            }
+        }
+    }
 }
