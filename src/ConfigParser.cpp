@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "Utils.hpp"
 #include "RegexSyntaxTree.hpp"
+#include "Dfa.hpp"
 
 void ConfigParser::addRegexToState(const std::string &state, const std::string regex){
     if(m_stateRegex.find(state) != m_stateRegex.end())
@@ -18,7 +19,9 @@ void ConfigParser::compileRegex() {
         RegexSyntaxTree t(el.second);
 
         m_stateDfa.emplace_back();
-        t.exportDfa(m_stateDfa[m_stateDfa.size()-1]);
+        Dfa tmp;
+        t.exportDfa(tmp);
+        Dfa::minimize(tmp, m_stateDfa[m_stateDfa.size() - 1]);
     }
 }
 
@@ -140,7 +143,7 @@ void ConfigParser::modifyRegex(std::string &regex, std::unordered_map<std::strin
     // removes {}
     std::vector<int> endpoints;
     for(int i = 0; i < (int)regex.size(); ++i){
-        if( (regex[i] == '{' || regex[i] == '}') && (i == 0 || regex[i - 1] != '\\') )
+        if( (regex[i] == '{' || regex[i] == '}') && !RegexSyntaxTree::isEscaped(regex, i) )
             endpoints.push_back(i);
     }
 

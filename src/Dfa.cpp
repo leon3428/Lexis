@@ -80,13 +80,15 @@ void Dfa::minimize(const Dfa &src, Dfa &dst) {
     std::fill(groupSplitInto.begin(), groupSplitInto.end(), -1);
 
     int groupCnt = 0;
-    for(int i = 0; i < src.getStateCount(); ++i){
+    group[0] = 0;
+    groupRepresentative[0] = 0;
+    for(int i = 1; i < src.getStateCount(); ++i){
         int regexId = src.getAcceptable(i);
         if(regexId == -1)
-            group[i] = 0;
+            group[i] = 1;
         else{
-            group[i] = regexId + 1; // svaki regex je posebna grupa
-            groupCnt = std::max(groupCnt, regexId + 2);
+            group[i] = regexId + 2; // svaki regex je posebna grupa
+            groupCnt = std::max(groupCnt, regexId + 3);
         }
         groupRepresentative[ group[i] ] = i;
     }
