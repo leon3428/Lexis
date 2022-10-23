@@ -2,6 +2,7 @@
 #include "Utils.hpp"
 
 void Dfa::print() const  {
+    std::cout << m_startState << std::endl;
     for(char c = ' ';c <= '~';c++) {
         std::cout << c << ' ';
     }
@@ -35,7 +36,7 @@ char Dfa::getSymbolFromId(int symbolId) {
     if(symbolId == '~' - ' ' + 1)
         return '\t';
     if(symbolId == '~' - ' ' + 2)
-        return '\t';
+        return '\n';
     
     DebugAssert(symbolId < 0 || ' ' + symbolId > '~', "Symbol out of range");
     return ' ' + symbolId;

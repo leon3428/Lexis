@@ -1,7 +1,6 @@
 import re
 import itertools
 import subprocess
-import sys
 
 ALPHABET = ["0", "1", "2"]
 MAX_LENGTH = 7

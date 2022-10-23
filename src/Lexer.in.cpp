@@ -1,12 +1,12 @@
 #include <iostream>
 
 struct Token {
-    const std::string &program;
     int start, end;
     int tokenId;
 
-    Token(const std::string &program, int start, int end, int tokenId) 
-        : program(program), start(start), end(end), tokenId(tokenId) {}
+    Token(int start, int end, int tokenId) 
+        : start(start), end(end), tokenId(tokenId) {}
+    Token() {}
 };
 
 $DfaFunctions$
@@ -14,10 +14,17 @@ $DfaFunctions$
 int main(int argc, char const *argv[])
 {
     std::string program;
-    std::cin >> program;
 
-    Token (*stateDfaArray[])(const std::string&, int) = {
-        $DfaFunctionsArray$
-    };
+    for (std::string line; std::getline(std::cin, line);) {
+        program += line + "\n";
+    }
+    std::cout << program << std::endl;
+
+    int pos = 0;
+    int lineCnt = 1;
+    Token result;
+
+    $main$
+
     return 0;
 }

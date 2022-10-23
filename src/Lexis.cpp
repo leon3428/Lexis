@@ -6,21 +6,17 @@
 
 int main(int argc, char const *argv[])
 {
-    LogInfo("%d", Dfa::getSymbolId('\n'));
     std::cout << argv[0] << " Version: " << LEXIS_VERSION_MAJOR << '.' << LEXIS_VERSION_MINOR << std::endl;
+
+    std::string configFile = "test/test2/examples/minusLang.lan";
 
     ConfigParser configParser; 
 
-    configParser.addRegexToState("state0", "(a|b)*abb");
-    configParser.addRegexToState("state0", "aba");
-
-    configParser.addRegexToState("state1", "\\\\a|\\t\\n");
-    configParser.addRegexToState("state1", "\\\\");
-
+    configParser.parseInput(configFile);
     configParser.compileRegex();
 
     std::string inPath = "src/Lexer.in.cpp";
-    std::string outPath = "Lexer.cpp";
+    std::string outPath = "test/test2/Lexer.cpp";
     configParser.generateLexer(inPath, outPath);
     return 0;
 }
