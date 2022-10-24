@@ -33,7 +33,7 @@ private:
 public:
     void addRegexToState(const std::string &state, const std::string regex);
     void compileRegex();
-    void parseInput(std::string &filename);
+    void parseInput(std::istream& stream);
 
     void generateLexer(std::string &inPath, std::string &outPath);
     void modifyRegex(std::string &regex, std::unordered_map<std::string, std::string> &nameToRegex) const;

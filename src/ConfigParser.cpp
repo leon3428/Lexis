@@ -168,7 +168,7 @@ void ConfigParser::modifyRegex(std::string &regex, std::unordered_map<std::strin
     regex = parsedRegex;
 }
 
-void ConfigParser::parseInput(std::string &filename){
+void ConfigParser::parseInput(std::istream& stream){
     /* 
     states = stanja
     names = imena leksickih jedinki
@@ -176,7 +176,6 @@ void ConfigParser::parseInput(std::string &filename){
     */
 
     std::string inp;
-    std::ifstream stream(filename);
     std::unordered_map<std::string, std::string> nameToRegex;
     bool start = true;
     std::vector<std::string> states, names;

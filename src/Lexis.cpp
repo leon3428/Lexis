@@ -8,11 +8,9 @@ int main(int argc, char const *argv[])
 {
     std::cout << argv[0] << " Version: " << LEXIS_VERSION_MAJOR << '.' << LEXIS_VERSION_MINOR << std::endl;
 
-    std::string configFile = "test/test2/examples/minusLang.lan";
-
     ConfigParser configParser; 
 
-    configParser.parseInput(configFile);
+    configParser.parseInput(std::cin);
     configParser.compileRegex();
 
     std::string inPath = "src/Lexer.in.cpp";

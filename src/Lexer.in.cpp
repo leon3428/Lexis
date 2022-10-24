@@ -18,7 +18,6 @@ int main(int argc, char const *argv[])
     for (std::string line; std::getline(std::cin, line);) {
         program += line + "\n";
     }
-    std::cout << program << std::endl;
 
     int pos = 0;
     int lineCnt = 1;

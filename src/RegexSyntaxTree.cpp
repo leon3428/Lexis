@@ -17,7 +17,7 @@ bool RegexSyntaxTree::isConcat(const std::string &s, int pos)
         a = s[pos];
 
     if(a == '\\')
-        return false;
+        return false; 
     /////////////////////////////////
     if(s[pos+1] == '\\') {
         if(pos+2 >= s.size())
