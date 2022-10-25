@@ -1,5 +1,6 @@
 #include "Dfa.hpp"
 #include "Utils.hpp"
+#include <algorithm>
 
 void Dfa::print() const  {
     std::cout << m_startState << std::endl;
@@ -74,22 +75,25 @@ void Dfa::setAcceptable(int state, int val) {
 
 void Dfa::minimize(const Dfa &src, Dfa &dst) {
     std::vector<int> group, groupRepresentative, groupSplitInto;
+    std::vector<int> order;
+
+    for(int i = 0; i < src.getStateCount(); ++i)
+        order.push_back(src.getAcceptable(i));
+
+    sort(order.begin(), order.end());
+    order.erase(unique(order.begin(), order.end()), order.end());
+
     group.resize(src.getStateCount());
     groupRepresentative.resize(src.getStateCount());
     groupSplitInto.resize(src.getStateCount());
     std::fill(groupSplitInto.begin(), groupSplitInto.end(), -1);
 
-    int groupCnt = 0;
+    int groupCnt = order.size() + 1;
     group[0] = 0;
     groupRepresentative[0] = 0;
     for(int i = 1; i < src.getStateCount(); ++i){
         int regexId = src.getAcceptable(i);
-        if(regexId == -1)
-            group[i] = 1;
-        else{
-            group[i] = regexId + 2; // svaki regex je posebna grupa
-            groupCnt = std::max(groupCnt, regexId + 3);
-        }
+        group[i] = (std::lower_bound(order.begin(), order.end(), regexId) - order.begin()) + 1; 
         groupRepresentative[ group[i] ] = i;
     }
     
@@ -99,9 +103,9 @@ void Dfa::minimize(const Dfa &src, Dfa &dst) {
         for(int i = 0; i < groupCnt; ++i)
             groupSplitInto[i] = -1; // didnt split
 
-        for(int i = 0; i < src.getStateCount(); ++i){
+        for(int i = 1; i < src.getStateCount(); ++i){
             for(int j = 0; j < src.getAlphabetSize(); ++j){
-                if( group[src.getTransitionInt(i, j)] != group[src.getTransitionInt( groupRepresentative[group[i]], j)] ){
+                if(group[src.getTransitionInt(i, j)] != group[src.getTransitionInt( groupRepresentative[group[i]], j)] ){
                     change = true;
                     
                     if(groupSplitInto[ group[i] ] == -1){
